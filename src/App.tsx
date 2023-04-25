@@ -5,8 +5,8 @@ import {
   createContext,
   useContext,
   useState,
-} from "react";
-import "./App.css";
+} from 'react';
+import './App.css';
 
 type ContextStateType<S> = [S, Dispatch<SetStateAction<S>>] | null;
 
@@ -28,7 +28,7 @@ const useCounterContext = () => {
   const context = useContext(CounterContext);
 
   if (context === null)
-    throw new Error("useCounterContext must be in CounterContextProvider");
+    throw new Error('useCounterContext must be in CounterContextProvider');
 
   return context;
 };
