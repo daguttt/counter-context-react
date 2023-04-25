@@ -1,35 +1,57 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from "react";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+type ContextStateType<S> = [S, Dispatch<SetStateAction<S>>] | null;
 
+const CounterContext = createContext<ContextStateType<number>>(null);
+
+type CounterContextProviderProps = {
+  children: ReactNode;
+};
+
+function CounterContextProvider({ children }: CounterContextProviderProps) {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <CounterContext.Provider value={useState(0)}>
+      {children}
+    </CounterContext.Provider>
+  );
 }
 
-export default App
+const useCounterContext = () => {
+  const context = useContext(CounterContext);
+
+  if (context === null)
+    throw new Error("useCounterContext must be in CounterContextProvider");
+
+  return context;
+};
+
+function Counter() {
+  const [counter] = useCounterContext();
+  return <p>Counter: {counter}</p>;
+}
+
+function AddCounter() {
+  const [, setCounter] = useCounterContext();
+  return (
+    <button onClick={() => setCounter((prev) => prev + 1)}>Add One</button>
+  );
+}
+
+function App() {
+  return (
+    <CounterContextProvider>
+      <Counter />
+      <AddCounter />
+    </CounterContextProvider>
+  );
+}
+
+export default App;
